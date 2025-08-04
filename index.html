@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>みてません。</title>
+  <style>
+    body {
+      font-family: "Arial", sans-serif;
+      background-color: #fefefe;
+      color: #333;
+      text-align: center;
+      padding: 2em;
+    }
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      background-color: #fff9f0;
+      border-radius: 1em;
+      padding: 2em;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .header-img {
+      width: 100%;
+      border-radius: 1em;
+      margin-bottom: 1em;
+    }
+    h1 {
+      font-size: 1.8em;
+      margin-bottom: 0.5em;
+    }
+    .points {
+      font-size: 1.5em;
+      margin-bottom: 1em;
+    }
+    button {
+      font-size: 1em;
+      padding: 0.6em 1.2em;
+      margin: 0.5em;
+      border: none;
+      border-radius: 0.5em;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .good {
+      background-color: #a3e4d7;
+    }
+    .bad {
+      background-color: #f5b7b1;
+    }
+    .message {
+      margin-top: 1em;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="header.jpg" alt="みてませんヘッダー画像" class="header-img" />
+    <h1>『みてません。』</h1>
+    <div class="points">ねむポ：<span id="points">0</span>pt</div>
+    <button class="good" onclick="reportNoLook()">🙈 見てない！</button>
+    <button class="bad" onclick="reportLooked()">📱 見ちゃった…</button>
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    const pointEl = document.getElementById("points");
+    const messageEl = document.getElementById("message");
+    const today = new Date().toLocaleDateString();
+
+    const praises = [
+      "えらいにゃ！🐾",
+      "今日もがんばったね！😺",
+      "よく寝れたかにゃ？💤",
+      "スマホ見なかったの、天才じゃん！✨"
+    ];
+
+    const comforts = [
+      "また明日があるにゃ。🐈",
+      "つい見ちゃう日もあるさ〜",
+      "がんばりすぎないでね💤",
+      "ねむポは逃げないよ…！"
+    ];
+
+    function getPoints() {
+      return parseInt(localStorage.getItem("points") || "0");
+    }
+
+    function setPoints(val) {
+      localStorage.setItem("points", val);
+      pointEl.textContent = val;
+    }
+
+    function alreadyReported() {
+      return localStorage.getItem("lastReport") === today;
+    }
+
+    function setReported() {
+      localStorage.setItem("lastReport", today);
+    }
+
+    function reportNoLook() {
+      if (alreadyReported()) {
+        messageEl.textContent = "今日はもう記録済みだよ🐾";
+        return;
+      }
+      const current = getPoints();
+      setPoints(current + 1);
+      setReported();
+      messageEl.textContent = praises[Math.floor(Math.random() * praises.length)];
+    }
+
+    function reportLooked() {
+      if (alreadyReported()) {
+        messageEl.textContent = "今日はもう記録済みだよ🐾";
+        return;
+      }
+      setReported();
+      messageEl.textContent = comforts[Math.floor(Math.random() * comforts.length)];
+    }
+
+    // 初期表示
+    setPoints(getPoints());
+  </script>
+</body>
+</html>
