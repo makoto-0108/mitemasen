@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>みてません。</title>
   <style>
     body {
@@ -11,15 +11,12 @@
       color: #333;
       text-align: center;
       padding: 2em;
-      max-width: 480px;
-      margin: auto;
     }
     .container {
       background-color: #ffffffcc;
       border-radius: 1em;
       padding: 2em;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      margin-bottom: 2em;
     }
     .header-png {
       width: 100%;
@@ -60,78 +57,28 @@
     .message {
       margin-top: 1em;
       font-size: 1.2em;
-      min-height: 1.5em;
     }
-
-    /* 日付別記録用スタイル */
-    form {
-      margin-bottom: 1em;
-      text-align: left;
-      background: #fff;
-      padding: 1em;
-      border-radius: 0.6em;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    label {
-      display: block;
-      margin: 0.5em 0 0.3em;
-      font-weight: bold;
-    }
-    input[type="date"],
-    input[type="number"] {
+    table {
+      margin-top: 2em;
       width: 100%;
-      padding: 0.4em;
-      font-size: 1em;
-      border: 1px solid #ccc;
-      border-radius: 0.4em;
-      box-sizing: border-box;
-    }
-    #countTable {
-      width: 100%;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
       border-collapse: collapse;
-      margin-top: 1em;
       background: #fff;
-      border-radius: 0.6em;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    #countTable th,
-    #countTable td {
-      border: 1px solid #ccc;
-      padding: 0.6em 0.8em;
-      text-align: center;
-    }
-    #countTable th {
-      background-color: #a3e4d7;
-      color: #333;
-    }
-    button.edit {
-      background-color: #ffcc00;
-      border: none;
-      cursor: pointer;
-      border-radius: 0.3em;
-      padding: 0.3em 0.7em;
-      font-size: 0.9em;
-    }
-    #btnContainer button {
-      margin-right: 8px;
-      margin-top: 1em;
-      padding: 0.5em 1em;
       border-radius: 0.5em;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
+      overflow: hidden;
     }
-    #show7days {
-      background-color: #a3e4d7;
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
     }
-    #showAll {
-      background-color: #f5b7b1;
+    th {
+      background-color: #e0e0e0;
     }
   </style>
 </head>
 <body>
-
   <div class="container">
     <img src="header.png" alt="みてませんヘッダー画像" class="header-png" />
     <h1>『みてません。』</h1>
@@ -139,187 +86,53 @@
     <button class="good" onclick="reportNoLook()">🙈 見てない！</button>
     <button class="bad" onclick="reportLooked()">📱 見ちゃった…</button>
     <div class="message" id="message"></div>
-  </div>
 
-  <div class="container" style="text-align:left;">
-    <h2>日付別カウント記録</h2>
-    <form id="countForm">
-      <label for="dateInput">日付</label>
-      <input type="date" id="dateInput" required />
-      <label for="countInput">カウント数</label>
-      <input type="number" id="countInput" required min="0" />
-      <button type="submit">保存</button>
-    </form>
-
-    <div id="btnContainer">
-      <button id="show7days">直近7日間表示</button>
-      <button id="showAll" style="display:none;">全件表示</button>
-    </div>
-
-    <table id="countTable" aria-label="カウント記録一覧">
+    <table id="historyTable">
       <thead>
-        <tr><th>日付</th><th>カウント数</th><th>操作</th></tr>
+        <tr><th>日付</th><th>結果</th></tr>
       </thead>
-      <tbody></tbody>
+      <tbody>
+        <!-- 履歴がここに挿入されます -->
+      </tbody>
     </table>
   </div>
 
-<script>
-  // ----- ねむポ（ポイント）カウント部分 -----
-  const pointEl = document.getElementById("points");
-  const messageEl = document.getElementById("message");
-  const todayStr = new Date().toLocaleDateString();
+  <script>
+    const pointEl = document.getElementById("points");
+    const messageEl = document.getElementById("message");
+    const historyTable = document.getElementById("historyTable").querySelector("tbody");
 
-  const praises = [
-    "えらいにゃ！🐾",
-    "今日もがんばったね！😺",
-    "よく寝れたかにゃ？💤",
-    "スマホ見なかったの、天才じゃん！✨"
-  ];
+    const today = new Date().toLocaleDateString();
+    const praises = ["えらいにゃ！🐾", "今日もがんばったね！😺", "よく寝れたかにゃ？💤", "スマホ見なかったの、天才じゃん！✨"];
+    const comforts = ["また明日があるにゃ。🐈", "つい見ちゃう日もあるさ〜", "がんばりすぎないでね💤", "ねむポは逃げないよ…！"];
 
-  const comforts = [
-    "また明日があるにゃ。🐈",
-    "つい見ちゃう日もあるさ〜",
-    "がんばりすぎないでね💤",
-    "ねむポは逃げないよ…！"
-  ];
-
-  function getPoints() {
-    return parseInt(localStorage.getItem("points") || "0");
-  }
-
-  function setPoints(val) {
-    localStorage.setItem("points", val);
-    pointEl.textContent = val;
-  }
-
-  function alreadyReported() {
-    return localStorage.getItem("lastReport") === todayStr;
-  }
-
-  function setReported() {
-    localStorage.setItem("lastReport", todayStr);
-  }
-
-  function reportNoLook() {
-    if (alreadyReported()) {
-      messageEl.textContent = "今日はもう記録済みだよ🐾";
-      return;
-    }
-    const current = getPoints();
-    setPoints(current + 1);
-    setReported();
-    messageEl.textContent = praises[Math.floor(Math.random() * praises.length)];
-  }
-
-  function reportLooked() {
-    if (alreadyReported()) {
-      messageEl.textContent = "今日はもう記録済みだよ🐾";
-      return;
-    }
-    setReported();
-    messageEl.textContent = comforts[Math.floor(Math.random() * comforts.length)];
-  }
-
-  // 初期ポイント表示
-  setPoints(getPoints());
-
-  // ----- 日付別カウント記録部分 -----
-  const form = document.getElementById('countForm');
-  const dateInput = document.getElementById('dateInput');
-  const countInput = document.getElementById('countInput');
-  const tbody = document.querySelector('#countTable tbody');
-
-  let counts = JSON.parse(localStorage.getItem('counts') || '{}');
-  let editingDate = null;
-
-  function renderTable() {
-    tbody.innerHTML = '';
-    const dates = Object.keys(counts).sort();
-    dates.forEach(date => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${date}</td>
-        <td>${counts[date]}</td>
-        <td><button class="edit" data-date="${date}">編集</button></td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-
-  function parseDate(str) {
-    return new Date(str + 'T00:00:00');
-  }
-
-  function renderLast7Days() {
-    tbody.innerHTML = '';
-    const today = new Date();
-    const sevenDaysAgo = new Date(today);
-    sevenDaysAgo.setDate(today.getDate() - 6); // 今日含む7日間
-
-    const dates = Object.keys(counts)
-      .filter(dateStr => {
-        const d = parseDate(dateStr);
-        return d >= sevenDaysAgo && d <= today;
-      })
-      .sort();
-
-    dates.forEach(date => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${date}</td>
-        <td>${counts[date]}</td>
-        <td><button class="edit" data-date="${date}">編集</button></td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    const date = dateInput.value;
-    const count = Number(countInput.value);
-
-    if (!date) {
-      alert('日付を選んでください');
-      return;
-    }
-    if (count < 0 || isNaN(count)) {
-      alert('正しいカウント数を入力してください');
-      return;
+    function getPoints() {
+      return parseInt(localStorage.getItem("points") || "0");
     }
 
-    counts[date] = count;
-    localStorage.setItem('counts', JSON.stringify(counts));
-    editingDate = null;
-    form.reset();
-    renderTable();
-  });
-
-  tbody.addEventListener('click', e => {
-    if (e.target.classList.contains('edit')) {
-      const date = e.target.dataset.date;
-      dateInput.value = date;
-      countInput.value = counts[date];
-      editingDate = date;
+    function setPoints(val) {
+      localStorage.setItem("points", val);
+      pointEl.textContent = val;
     }
-  });
 
-  document.getElementById('show7days').addEventListener('click', () => {
-    renderLast7Days();
-    document.getElementById('show7days').style.display = 'none';
-    document.getElementById('showAll').style.display = 'inline-block';
-  });
+    function getHistory() {
+      return JSON.parse(localStorage.getItem("history") || "{}");
+    }
 
-  document.getElementById('showAll').addEventListener('click', () => {
-    renderTable();
-    document.getElementById('show7days').style.display = 'inline-block';
-    document.getElementById('showAll').style.display = 'none';
-  });
+    function saveHistory(history) {
+      localStorage.setItem("history", JSON.stringify(history));
+    }
 
-  // 初期表示は全件表示
-  renderTable();
+    function alreadyReported() {
+      return getHistory()[today] !== undefined;
+    }
 
-</script>
-</body>
-</html>
+    function setReported(result) {
+      const history = getHistory();
+      history[today] = result;
+      saveHistory(history);
+    }
+
+    function reportNoLook() {
+      if (alreadyReported()) {
+        messageEl.textContent = "今日
