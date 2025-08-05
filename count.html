@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>日々のカウント管理</title>
+<style>
+  body { font-family: sans-serif; max-width: 480px; margin: 20px auto; }
+  input, button { padding: 8px; margin: 5px 0; }
+  table { width: 100%; border-collapse: collapse; margin-top: 20px;}
+  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+  button.edit { background-color: #ffcc00; border: none; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<h1>日々のカウント記録</h1>
+
+<form id="countForm">
+  <label>日付: <input type="date" id="dateInput" required /></label><br />
+  <label>カウント数: <input type="number" id="countInput" required min="0" /></label><br />
+  <button type="submit">保存</button>
+</form>
+
+<table id="countTable">
+  <thead>
+    <tr><th>日付</th><th>カウント数</th><th>操作</th></tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+
+<script>
+  const form = document.getElementById('countForm');
+  const dateInput = document.getElementById('dateInput');
+  const countInput = document.getElementById('countInput');
+  const tbody = document.querySelector('#countTable tbody');
+
+  let counts = JSON.parse(localStorage.getItem('counts') || '{}');
+  let editingDate = null;
+
+  function renderTable() {
+    tbody.innerHTML = '';
+    const dates = Object.keys(counts).sort();
+    dates.forEach(date => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${date}</td>
+        <td>${counts[date]}</td>
+        <td><button class="edit" data-date="${date}">編集</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const date = dateInput.value;
+    const count = Number(countInput.value);
+
+    if (!date) {
+      alert('日付を選んでください');
+      return;
+    }
+    if (count < 0 || isNaN(count)) {
+      alert('正しいカウント数を入力してください');
+      return;
+    }
+
+    counts[date] = count;
+    localStorage.setItem('counts', JSON.stringify(counts));
+    editingDate = null;
+    form.reset();
+    renderTable();
+  });
+
+  tbody.addEventListener('click', e => {
+    if (e.target.classList.contains('edit')) {
+      const date = e.target.dataset.date;
+      dateInput.value = date;
+      countInput.value = counts[date];
+      editingDate = date;
+    }
+  });
+
+  renderTable();
+</script>
+
+</body>
+</html>
