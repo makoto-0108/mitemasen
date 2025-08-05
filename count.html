@@ -5,11 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>日々のカウント管理</title>
 <style>
-  body { font-family: sans-serif; max-width: 480px; margin: 20px auto; }
-  input, button { padding: 8px; margin: 5px 0; }
+  body { font-family: sans-serif; max-width: 480px; margin: 20px auto; padding: 0 10px; }
+  input, button { padding: 8px; margin: 5px 0; font-size: 1em; }
   table { width: 100%; border-collapse: collapse; margin-top: 20px;}
   th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-  button.edit { background-color: #ffcc00; border: none; cursor: pointer; }
+  button.edit { background-color: #ffcc00; border: none; cursor: pointer; border-radius: 4px; }
+  #btnContainer {
+    margin-top: 10px;
+  }
+  #btnContainer button {
+    padding: 6px 12px;
+    margin-right: 8px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  #show7days { background-color: #a3e4d7; color: #000; }
+  #showAll { background-color: #f5b7b1; color: #000; display: none; }
 </style>
 </head>
 <body>
@@ -21,6 +34,11 @@
   <label>カウント数: <input type="number" id="countInput" required min="0" /></label><br />
   <button type="submit">保存</button>
 </form>
+
+<div id="btnContainer">
+  <button id="show7days">直近7日間表示</button>
+  <button id="showAll">全件表示</button>
+</div>
 
 <table id="countTable">
   <thead>
@@ -35,13 +53,22 @@
   const dateInput = document.getElementById('dateInput');
   const countInput = document.getElementById('countInput');
   const tbody = document.querySelector('#countTable tbody');
+  const btnShow7 = document.getElementById('show7days');
+  const btnShowAll = document.getElementById('showAll');
 
   let counts = JSON.parse(localStorage.getItem('counts') || '{}');
   let editingDate = null;
 
-  function renderTable() {
+  function parseDate(str) {
+    return new Date(str + 'T00:00:00');
+  }
+
+  function renderTable(dates = null) {
     tbody.innerHTML = '';
-    const dates = Object.keys(counts).sort();
+    // 指定なければ全日付をソートして取得
+    if (!dates) {
+      dates = Object.keys(counts).sort();
+    }
     dates.forEach(date => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -51,6 +78,21 @@
       `;
       tbody.appendChild(tr);
     });
+  }
+
+  function renderLast7Days() {
+    const today = new Date();
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 6); // 今日含む7日間
+
+    const filteredDates = Object.keys(counts)
+      .filter(dateStr => {
+        const d = parseDate(dateStr);
+        return d >= sevenDaysAgo && d <= today;
+      })
+      .sort();
+
+    renderTable(filteredDates);
   }
 
   form.addEventListener('submit', e => {
@@ -71,7 +113,14 @@
     localStorage.setItem('counts', JSON.stringify(counts));
     editingDate = null;
     form.reset();
-    renderTable();
+    // 保存後は表示モードに合わせて再描画
+    if (btnShow7.style.display === 'none') {
+      renderTable(); // 全件表示
+      btnShow7.style.display = 'inline-block';
+      btnShowAll.style.display = 'none';
+    } else {
+      renderTable();
+    }
   });
 
   tbody.addEventListener('click', e => {
@@ -83,6 +132,19 @@
     }
   });
 
+  btnShow7.addEventListener('click', () => {
+    renderLast7Days();
+    btnShow7.style.display = 'none';
+    btnShowAll.style.display = 'inline-block';
+  });
+
+  btnShowAll.addEventListener('click', () => {
+    renderTable();
+    btnShow7.style.display = 'inline-block';
+    btnShowAll.style.display = 'none';
+  });
+
+  // 初期表示は全件
   renderTable();
 </script>
 
