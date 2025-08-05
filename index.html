@@ -12,12 +12,16 @@
       text-align: center;
       padding: 2em;
     }
+
     .container {
       background-color: #ffffffcc;
       border-radius: 1em;
       padding: 2em;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      margin: auto;
     }
+
     .header-png {
       width: 100%;
       max-width: 300px;
@@ -26,53 +30,75 @@
       margin: 0 auto 1em;
       border-radius: 1em;
     }
+
     @media (min-width: 768px) {
       .header-png {
         max-width: 200px;
       }
     }
+
     h1 {
       font-size: 1.8em;
       margin-bottom: 0.5em;
     }
+
     .points {
       font-size: 1.5em;
       margin-bottom: 1em;
     }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 1em;
+      flex-wrap: wrap;
+      margin-bottom: 1em;
+    }
+
     button {
       font-size: 1em;
       padding: 0.6em 1.2em;
-      margin: 0.5em;
       border: none;
       border-radius: 0.5em;
       cursor: pointer;
       transition: background-color 0.3s;
+      min-width: 130px;
     }
+
     .good {
       background-color: #a3e4d7;
     }
+
     .bad {
       background-color: #f5b7b1;
     }
+
+    @media (min-width: 768px) {
+      button {
+        min-width: 180px;
+      }
+    }
+
     .message {
       margin-top: 1em;
       font-size: 1.2em;
     }
+
     table {
       margin-top: 2em;
       width: 100%;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
       border-collapse: collapse;
       background: #fff;
       border-radius: 0.5em;
       overflow: hidden;
     }
+
     th, td {
       padding: 10px;
       border: 1px solid #ccc;
+      text-align: center;
     }
+
     th {
       background-color: #e0e0e0;
     }
@@ -83,26 +109,28 @@
     <img src="header.png" alt="みてませんヘッダー画像" class="header-png" />
     <h1>『みてません。』</h1>
     <div class="points">ねむポ：<span id="points">0</span>pt</div>
-    <button class="good" onclick="reportNoLook()">🙈 見てない！</button>
-    <button class="bad" onclick="reportLooked()">📱 見ちゃった…</button>
+
+    <div class="button-group">
+      <button class="good" onclick="reportNoLook()">🙈 見てない！</button>
+      <button class="bad" onclick="reportLooked()">📱 見ちゃった…</button>
+    </div>
+
     <div class="message" id="message"></div>
 
     <table id="historyTable">
       <thead>
         <tr><th>日付</th><th>結果</th></tr>
       </thead>
-      <tbody>
-        <!-- 履歴がここに挿入されます -->
-      </tbody>
+      <tbody></tbody>
     </table>
   </div>
 
   <script>
     const pointEl = document.getElementById("points");
     const messageEl = document.getElementById("message");
-    const historyTable = document.getElementById("historyTable").querySelector("tbody");
+    const historyTable = document.querySelector("#historyTable tbody");
 
-    const today = new Date().toLocaleDateString("ja-JP");
+    const today = new Date().toLocaleDateString();
     const praises = ["えらいにゃ！🐾", "今日もがんばったね！😺", "よく寝れたかにゃ？💤", "スマホ見なかったの、天才じゃん！✨"];
     const comforts = ["また明日があるにゃ。🐈", "つい見ちゃう日もあるさ〜", "がんばりすぎないでね💤", "ねむポは逃げないよ…！"];
 
@@ -124,14 +152,15 @@
     }
 
     function alreadyReported() {
-      return getHistory()[today] !== undefined;
+      const history = getHistory();
+      return history[today] !== undefined;
     }
 
     function setReported(result) {
       const history = getHistory();
       history[today] = result;
       saveHistory(history);
-      renderHistory();
+      updateHistoryTable();
     }
 
     function reportNoLook() {
@@ -141,8 +170,8 @@
       }
       const current = getPoints();
       setPoints(current + 1);
-      setReported("🙈 +1pt");
-      messageEl.textContent = praises[Math.floor(Math.random() * praises.length)];
+      setReported("🙈 見てない！");
+      messageEl.textContent = randomFrom(praises);
     }
 
     function reportLooked() {
@@ -150,15 +179,20 @@
         messageEl.textContent = "今日はもう記録済みだよ🐾";
         return;
       }
-      setReported("📱 0pt");
-      messageEl.textContent = comforts[Math.floor(Math.random() * comforts.length)];
+      setReported("📱 見ちゃった…");
+      messageEl.textContent = randomFrom(comforts);
     }
 
-    function renderHistory() {
+    function randomFrom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function updateHistoryTable() {
       const history = getHistory();
-      const dates = Object.keys(history).sort((a, b) => new Date(b) - new Date(a)).slice(0, 7);
+      const sortedDates = Object.keys(history).sort((a, b) => new Date(b) - new Date(a)).slice(0, 7);
+
       historyTable.innerHTML = "";
-      dates.forEach(date => {
+      sortedDates.forEach(date => {
         const row = document.createElement("tr");
         row.innerHTML = `<td>${date}</td><td>${history[date]}</td>`;
         historyTable.appendChild(row);
@@ -167,7 +201,7 @@
 
     // 初期化
     setPoints(getPoints());
-    renderHistory();
+    updateHistoryTable();
   </script>
 </body>
 </html>
