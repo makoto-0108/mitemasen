@@ -144,34 +144,28 @@
     const praises = ["えらいにゃ！🐾", "今日もがんばったね！😺", "よく寝れたかにゃ？💤", "スマホ見なかったの、天才じゃん！✨"];
     const comforts = ["また明日があるにゃ。🐈", "つい見ちゃう日もあるさ〜", "がんばりすぎないでね💤", "ねむポは逃げないよ…！"];
 
-    // 合計ポイント取得
     function getPoints() {
       return parseInt(localStorage.getItem("points") || "0");
     }
 
-    // 合計ポイントセット
     function setPoints(val) {
       localStorage.setItem("points", val);
       pointEl.textContent = val;
     }
 
-    // 履歴取得 { "2025/8/5": { result: "...", point: 1 }, ... }
     function getHistory() {
       return JSON.parse(localStorage.getItem("history") || "{}");
     }
 
-    // 履歴保存
     function saveHistory(history) {
       localStorage.setItem("history", JSON.stringify(history));
     }
 
-    // 今日すでに報告済みか
     function alreadyReported() {
       const history = getHistory();
       return history[today] !== undefined;
     }
 
-    // 今日の報告を履歴に保存
     function setReported(result, pointDelta) {
       const history = getHistory();
       history[today] = { result, point: pointDelta };
@@ -179,7 +173,6 @@
       updateHistoryTable();
     }
 
-    // 「見てない」報告
     function reportNoLook() {
       if (alreadyReported()) {
         messageEl.textContent = "今日はもう記録済みだよ🐾";
@@ -191,7 +184,6 @@
       messageEl.textContent = randomFrom(praises);
     }
 
-    // 「見ちゃった」報告
     function reportLooked() {
       if (alreadyReported()) {
         messageEl.textContent = "今日はもう記録済みだよ🐾";
@@ -201,32 +193,29 @@
       messageEl.textContent = randomFrom(comforts);
     }
 
-    // 配列からランダム選択
     function randomFrom(arr) {
       return arr[Math.floor(Math.random() * arr.length)];
     }
 
-    // 履歴テーブル更新（最新7日分）
     function updateHistoryTable() {
       const history = getHistory();
-      // 日付順にソートし（新しい順）、7日分だけ表示
       const sortedDates = Object.keys(history)
         .sort((a, b) => new Date(b) - new Date(a))
         .slice(0, 7);
 
       historyTable.innerHTML = "";
       sortedDates.forEach(date => {
-        const { result, point } = history[date];
+        const entry = history[date];
+        const result = (entry && entry.result) || "不明";
+        const point = (entry && entry.point != null) ? entry.point : "-";
         const row = document.createElement("tr");
         row.innerHTML = `<td>${date}</td><td>${result}</td><td>${point}pt</td>`;
         historyTable.appendChild(row);
       });
 
-      // 合計ポイント表示も更新
       totalPointsEl.textContent = `累計ねむポ：${getPoints()}pt`;
     }
 
-    // 初期化処理
     setPoints(getPoints());
     updateHistoryTable();
   </script>
