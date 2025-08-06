@@ -2,221 +2,123 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>みてません。</title>
   <style>
     body {
-      font-family: "Arial", sans-serif;
-      background-color: #C8D5B9;
+      font-family: sans-serif;
+      padding: 20px;
+      background-color: #fdf6f0;
       color: #333;
-      text-align: center;
-      padding: 2em;
+      max-width: 600px;
+      margin: auto;
     }
-    .container {
-      background-color: #ffffffcc;
-      border-radius: 1em;
-      padding: 2em;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      max-width: 480px;
-      margin: 0 auto;
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
     }
-    .header-png {
-      width: 100%;
-      max-width: 300px;
-      height: auto;
-      display: block;
-      margin: 0 auto 1em;
-      border-radius: 1em;
+
+    h2 {
+      font-size: 22px;
+      margin-top: 30px;
+      margin-bottom: 10px;
     }
-    .slogan {
-      font-size: 1.2em;
-      color: #4a5a2a;
-      margin-top: -1em;
-      margin-bottom: 1.5em;
-      font-style: italic;
-      font-weight: 600;
+
+    p {
+      font-size: 16px;
+      margin-bottom: 12px;
     }
-    .cat-image {
-      width: 150px;
-      max-width: 80%;
-      height: auto;
-      margin: 1em auto;
-      display: block;
-      transition: transform 0.3s ease;
+
+    label {
+      display: inline-block;
+      width: 100px;
+      margin-top: 8px;
     }
-    .points {
-      font-size: 1.5em;
-      margin-bottom: 1em;
+
+    input[type="time"] {
+      padding: 6px;
+      font-size: 16px;
+      margin-bottom: 8px;
     }
+
     button {
-      font-size: 1em;
-      padding: 0.6em 1.2em;
-      margin: 0.5em;
+      padding: 8px 14px;
+      font-size: 16px;
+      background-color: #ffdca8;
       border: none;
-      border-radius: 0.5em;
+      border-radius: 6px;
       cursor: pointer;
-      transition: background-color 0.3s;
+      margin-top: 10px;
     }
-    .good {
-      background-color: #a3e4d7;
+
+    button:hover {
+      background-color: #ffc980;
     }
-    .bad {
-      background-color: #f5b7b1;
+
+    #displayTime {
+      margin-top: 20px;
+      font-weight: bold;
     }
-    .message {
-      margin-top: 1em;
-      font-size: 1.2em;
-      min-height: 2em;
-    }
-    table {
-      margin-top: 2em;
-      width: 100%;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-      border-collapse: collapse;
-      background: #fff;
-      border-radius: 0.5em;
-      overflow: hidden;
-    }
-    th, td {
-      padding: 10px;
-      border: 1px solid #ccc;
-    }
-    th {
-      background-color: #e0e0e0;
+
+    footer {
+      margin-top: 40px;
+      font-size: 13px;
+      text-align: center;
+      color: #999;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <img src="header.png" alt="みてませんヘッダー画像" class="header-png" />
-    <h2 class="slogan">夜ふかしスマホにさようなら。</h2>
-    <img id="catImage" src="cat_normal.png" alt="黒猫ちゃん" class="cat-image" />
-    <div class="points">ねむポ：<span id="points">0</span>pt</div>
-    <button class="good" onclick="reportNoLook()">🙈 見てない！</button>
-    <button class="bad" onclick="reportLooked()">📱 見ちゃった…</button>
-    <div class="message" id="message"></div>
+  <h1>みてません。</h1>
+  <p>深夜スマホを見ないと、ねむぽ（ポイント）がたまる癒し系アプリです。</p>
 
-    <table id="historyTable">
-      <thead>
-        <tr><th>日付</th><th>結果</th></tr>
-      </thead>
-      <tbody>
-        <!-- 履歴がここに挿入されます -->
-      </tbody>
-    </table>
-  </div>
+  <!-- スマホ見ない時間の設定フォーム -->
+  <h2>📵 スマホ見ない時間の設定</h2>
+
+  <form id="silentTimeForm">
+    <label for="start">開始時間：</label>
+    <input type="time" id="start"><br>
+
+    <label for="end">終了時間：</label>
+    <input type="time" id="end"><br>
+
+    <button type="button" onclick="setSilentTime()">保存する</button>
+  </form>
+
+  <p id="displayTime">現在の設定：まだ未設定です。</p>
 
   <script>
-    const pointEl = document.getElementById("points");
-    const messageEl = document.getElementById("message");
-    const catImage = document.getElementById("catImage");
-    const historyTable = document.getElementById("historyTable").querySelector("tbody");
+    function setSilentTime() {
+      const start = document.getElementById("start").value;
+      const end = document.getElementById("end").value;
 
-    // 画像ファイル名
-    const CAT_NORMAL = "cat_normal.png";
-    const CAT_RIBBON = "cat_ribbon.png";
-    const CAT_HAT = "cat_hat.png";
-    const CAT_CROWN = "cat_crown.png";
-
-    const today = new Date().toLocaleDateString("ja-JP");
-    const praises = [
-      "えらいにゃ！🐾", 
-      "今日もがんばったね！😺", 
-      "よく寝れたかにゃ？💤", 
-      "スマホ見なかったの、天才じゃん！✨",
-      "おしゃれアップで気分もアゲアゲ！"
-    ];
-    const comforts = [
-      "また明日があるにゃ。🐈", 
-      "つい見ちゃう日もあるさ〜", 
-      "がんばりすぎないでね💤", 
-      "ねむポは逃げないよ…！"
-    ];
-
-    // ポイントに応じて猫画像を切り替え
-    function updateCatImage(points) {
-      if (points >= 7) {
-        catImage.src = CAT_CROWN;
-      } else if (points >= 4) {
-        catImage.src = CAT_HAT;
-      } else if (points >= 2) {
-        catImage.src = CAT_RIBBON;
+      if (start && end) {
+        localStorage.setItem("silentStart", start);
+        localStorage.setItem("silentEnd", end);
+        updateDisplay();
       } else {
-        catImage.src = CAT_NORMAL;
+        alert("開始時間と終了時間を入力してください！");
       }
     }
 
-    function getPoints() {
-      return parseInt(localStorage.getItem("points") || "0");
-    }
+    function updateDisplay() {
+      const start = localStorage.getItem("silentStart");
+      const end = localStorage.getItem("silentEnd");
 
-    function setPoints(val) {
-      localStorage.setItem("points", val);
-      pointEl.textContent = val;
-      updateCatImage(val);
-    }
-
-    function getHistory() {
-      return JSON.parse(localStorage.getItem("history") || "{}");
-    }
-
-    function saveHistory(history) {
-      localStorage.setItem("history", JSON.stringify(history));
-    }
-
-    function alreadyReported() {
-      return getHistory()[today] !== undefined;
-    }
-
-    function setReported(result) {
-      const history = getHistory();
-      history[today] = result;
-      saveHistory(history);
-      renderHistory();
-    }
-
-    function reportNoLook() {
-      if (alreadyReported()) {
-        messageEl.textContent = "今日はもう記録済みだよ🐾";
-        return;
-      }
-      const current = getPoints();
-      const newPoints = current + 1;
-      setPoints(newPoints);
-      setReported("🙈 +1pt");
-
-      if (newPoints >= 7) {
-        messageEl.textContent = "王冠ゲット！えらすぎるにゃ〜👑";
-      } else {
-        messageEl.textContent = praises[Math.floor(Math.random() * praises.length)];
+      if (start && end) {
+        document.getElementById("displayTime").textContent =
+          `現在の設定：${start}〜${end}`;
+        document.getElementById("start").value = start;
+        document.getElementById("end").value = end;
       }
     }
 
-    function reportLooked() {
-      if (alreadyReported()) {
-        messageEl.textContent = "今日はもう記録済みだよ🐾";
-        return;
-      }
-      setReported("📱 0pt");
-      messageEl.textContent = comforts[Math.floor(Math.random() * comforts.length)];
-    }
-
-    function renderHistory() {
-      const history = getHistory();
-      const dates = Object.keys(history).sort((a, b) => new Date(b) - new Date(a)).slice(0, 7);
-      historyTable.innerHTML = "";
-      dates.forEach(date => {
-        const row = document.createElement("tr");
-        row.innerHTML = `<td>${date}</td><td>${history[date]}</td>`;
-        historyTable.appendChild(row);
-      });
-    }
-
-    // 初期化
-    setPoints(getPoints());
-    renderHistory();
+    window.onload = updateDisplay;
   </script>
+
+  <footer>
+    © 2025 みてません。by まこと
+  </footer>
 </body>
 </html>
