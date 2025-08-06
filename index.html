@@ -16,6 +16,7 @@
       text-align: center;
       padding: 2em;
     }
+
     .container {
       background-color: #ffffffcc;
       border-radius: 1em;
@@ -24,22 +25,26 @@
       max-width: 480px;
       margin: 0 auto;
     }
+
     .header-png {
       width: 100%;
       max-width: 300px;
       height: auto;
       display: block;
-      margin: 0 auto 1em;
+      margin: 0 auto 1.5em; /* ← 余白を広めにして被り防止 */
       border-radius: 1em;
     }
+
     .slogan {
       font-size: 1.2em;
       color: #4a5a2a;
-      margin-top: -1em;
+      margin-top: 0; /* ← 被らないように */
       margin-bottom: 1.5em;
       font-style: italic;
       font-weight: 600;
+      text-shadow: 1px 1px 2px #ccc; /* ← 読みやすさUP */
     }
+
     .cat-image {
       width: 150px;
       max-width: 80%;
@@ -48,10 +53,12 @@
       display: block;
       transition: transform 0.3s ease;
     }
+
     .points {
       font-size: 1.5em;
       margin-bottom: 1em;
     }
+
     button {
       font-size: 1em;
       padding: 0.6em 1.2em;
@@ -61,17 +68,21 @@
       cursor: pointer;
       transition: background-color 0.3s;
     }
+
     .good {
       background-color: #a3e4d7;
     }
+
     .bad {
       background-color: #f5b7b1;
     }
+
     .message {
       margin-top: 1em;
       font-size: 1.2em;
       min-height: 2em;
     }
+
     table {
       margin-top: 2em;
       width: 100%;
@@ -83,10 +94,12 @@
       border-radius: 0.5em;
       overflow: hidden;
     }
+
     th, td {
       padding: 10px;
       border: 1px solid #ccc;
     }
+
     th {
       background-color: #e0e0e0;
     }
@@ -139,7 +152,6 @@
       "ねむポは逃げないよ…！"
     ];
 
-    // ポイントに応じて猫画像を切り替え
     function updateCatImage(points) {
       if (points >= 7) {
         catImage.src = CAT_CROWN;
@@ -218,7 +230,6 @@
       });
     }
 
-    // 初期化
     setPoints(getPoints());
     renderHistory();
   </script>
