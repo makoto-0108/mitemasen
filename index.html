@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>みてません。</title>
 
-  <!-- Google FontsからKosugi Maruを読み込み -->
   <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
 
   <style>
@@ -31,18 +30,18 @@
       max-width: 300px;
       height: auto;
       display: block;
-      margin: 0 auto 1.5em; /* ← 余白を広めにして被り防止 */
+      margin: 0 auto 1.5em;
       border-radius: 1em;
     }
 
     .slogan {
       font-size: 1.2em;
       color: #4a5a2a;
-      margin-top: 0; /* ← 被らないように */
+      margin-top: 0;
       margin-bottom: 1.5em;
       font-style: italic;
       font-weight: 600;
-      text-shadow: 1px 1px 2px #ccc; /* ← 読みやすさUP */
+      text-shadow: 1px 1px 2px #ccc;
     }
 
     .cat-image {
@@ -75,6 +74,14 @@
 
     .bad {
       background-color: #f5b7b1;
+    }
+
+    .lucky-message {
+      margin-top: 1em;
+      font-size: 1.1em;
+      font-weight: bold;
+      color: #5e793f;
+      min-height: 2em;
     }
 
     .message {
@@ -112,56 +119,61 @@
     <img id="catImage" src="cat_normal.png" alt="黒猫ちゃん" class="cat-image" />
     <div class="points">ねむポ：<span id="points">0</span>pt</div>
     <button class="good" onclick="reportNoLook()">🐱 見てない！</button>
-　　<button class="bad" onclick="reportLooked()">📱 見ちゃった…</button>
+    <button class="bad" onclick="reportLooked()">📱 見ちゃった…</button>
+    
+    <div class="lucky-message" id="luckyMessage"></div>
     <div class="message" id="message"></div>
 
     <table id="historyTable">
       <thead>
         <tr><th>日付</th><th>結果</th></tr>
       </thead>
-      <tbody>
-        <!-- 履歴がここに挿入されます -->
-      </tbody>
+      <tbody></tbody>
     </table>
   </div>
 
   <script>
     const pointEl = document.getElementById("points");
     const messageEl = document.getElementById("message");
+    const luckyEl = document.getElementById("luckyMessage");
     const catImage = document.getElementById("catImage");
     const historyTable = document.getElementById("historyTable").querySelector("tbody");
 
-    // 画像ファイル名
     const CAT_NORMAL = "cat_normal.png";
     const CAT_RIBBON = "cat_ribbon.png";
     const CAT_HAT = "cat_hat.png";
     const CAT_CROWN = "cat_crown.png";
 
     const today = new Date().toLocaleDateString("ja-JP");
+
     const praises = [
-      "えらいにゃ！🐾", 
-      "今日もがんばったね！😺", 
-      "よく寝れたかにゃ？💤", 
-      "スマホ見なかったの、天才じゃん！✨",
-      "おしゃれアップで気分もアゲアゲ！"
+      "えらいにゃ！🐾", "今日もがんばったね！😺", "よく寝れたかにゃ？💤",
+      "スマホ見なかったの、天才じゃん！✨", "おしゃれアップで気分もアゲアゲ！"
     ];
+
     const comforts = [
-      "また明日があるにゃ。🐈", 
-      "つい見ちゃう日もあるさ〜", 
-      "がんばりすぎないでね💤", 
-      "ねむポは逃げないよ…！"
+      "また明日があるにゃ。🐈", "つい見ちゃう日もあるさ〜",
+      "がんばりすぎないでね💤", "ねむポは逃げないよ…！"
+    ];
+
+    const luckyMessages = [
+      "今日はラッキー猫がついてるかも！", "忘れ物に注意してね！", "素敵な偶然が起きる予感！",
+      "道ばたにラッキーが落ちてるかも？", "笑顔で1日が変わるよ✨", "カフェの隅にチャンスあり！",
+      "今日はスッキリ起きられるかも！", "いい夢見られるかにゃ？", "ちょっとだけ早歩きが吉◎",
+      "思い切って話してみよう！", "自分を褒めていい日だよ", "音楽に癒されてみて🎵",
+      "猫がいたら挨拶しよう", "新しいお菓子を試してみて！", "ラッキーナンバーは3🐾",
+      "靴ひも、ちゃんと結べてる？", "あったかい飲み物が心をほぐすよ☕", "いつもより深呼吸を多めに！",
+      "カバンの中を整理すると運気UP", "親切をすると2倍返ってくるかも", "ごほうびをあげよう！",
+      "身近な人に「ありがとう」を", "いい香りを探してみて🌸", "緑を見ると落ち着くにゃ🌿",
+      "今日はタイミングが絶妙かも！", "まゆげ整えると運気UP", "小さな幸せに気づける日🌞",
+      "思い切ってやってみると吉", "今日のラッキーアイテムは『文房具』", "空を見上げてリセットしよう"
     ];
 
     function updateCatImage(points) {
-      if (points >= 7) {
-        catImage.src = CAT_CROWN;
-      } else if (points >= 4) {
-        catImage.src = CAT_HAT;
-      } else if (points >= 2) {
-        catImage.src = CAT_RIBBON;
-      } else {
-        catImage.src = CAT_NORMAL;
-      }
+      if (points >= 7) catImage.src = CAT_CROWN;
+      else if (points >= 4) catImage.src = CAT_HAT;
+      else if (points >= 2) catImage.src = CAT_RIBBON;
+      else catImage.src = CAT_NORMAL;
     }
 
     function getPoints() {
@@ -198,16 +210,10 @@
         messageEl.textContent = "今日はもう記録済みだよ🐾";
         return;
       }
-      const current = getPoints();
-      const newPoints = current + 1;
+      const newPoints = getPoints() + 1;
       setPoints(newPoints);
       setReported("🙈 +1pt");
-
-      if (newPoints >= 7) {
-        messageEl.textContent = "王冠ゲット！えらすぎるにゃ〜👑";
-      } else {
-        messageEl.textContent = praises[Math.floor(Math.random() * praises.length)];
-      }
+      messageEl.textContent = newPoints >= 7 ? "王冠ゲット！えらすぎるにゃ〜👑" : randomItem(praises);
     }
 
     function reportLooked() {
@@ -216,7 +222,7 @@
         return;
       }
       setReported("📱 0pt");
-      messageEl.textContent = comforts[Math.floor(Math.random() * comforts.length)];
+      messageEl.textContent = randomItem(comforts);
     }
 
     function renderHistory() {
@@ -230,8 +236,24 @@
       });
     }
 
+    function randomItem(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function showLuckyMessage() {
+      const key = "lucky_" + today;
+      let msg = localStorage.getItem(key);
+      if (!msg) {
+        msg = randomItem(luckyMessages);
+        localStorage.setItem(key, msg);
+      }
+      luckyEl.textContent = "🔮 今日のひとこと運勢： " + msg;
+    }
+
+    // 初期化
     setPoints(getPoints());
     renderHistory();
+    showLuckyMessage();
   </script>
 </body>
 </html>
