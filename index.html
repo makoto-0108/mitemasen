@@ -114,7 +114,10 @@
     const catImage = document.getElementById("catImage");
     const historyTable = document.getElementById("historyTable").querySelector("tbody");
 
+    // 画像ファイル名
     const CAT_NORMAL = "cat_normal.png";
+    const CAT_RIBBON = "cat_ribbon.png";
+    const CAT_HAT = "cat_hat.png";
     const CAT_CROWN = "cat_crown.png";
 
     const today = new Date().toLocaleDateString("ja-JP");
@@ -123,7 +126,7 @@
       "今日もがんばったね！😺", 
       "よく寝れたかにゃ？💤", 
       "スマホ見なかったの、天才じゃん！✨",
-      "王冠ゲットに近づいてるにゃ〜👑"
+      "おしゃれアップで気分もアゲアゲ！"
     ];
     const comforts = [
       "また明日があるにゃ。🐈", 
@@ -132,6 +135,19 @@
       "ねむポは逃げないよ…！"
     ];
 
+    // ポイントに応じて猫画像を切り替え
+    function updateCatImage(points) {
+      if (points >= 7) {
+        catImage.src = CAT_CROWN;
+      } else if (points >= 4) {
+        catImage.src = CAT_HAT;
+      } else if (points >= 2) {
+        catImage.src = CAT_RIBBON;
+      } else {
+        catImage.src = CAT_NORMAL;
+      }
+    }
+
     function getPoints() {
       return parseInt(localStorage.getItem("points") || "0");
     }
@@ -139,13 +155,7 @@
     function setPoints(val) {
       localStorage.setItem("points", val);
       pointEl.textContent = val;
-
-      if (val >= 7) {
-        catImage.src = CAT_CROWN;
-        messageEl.textContent = "王冠ゲット！えらすぎるにゃ〜👑";
-      } else {
-        catImage.src = CAT_NORMAL;
-      }
+      updateCatImage(val);
     }
 
     function getHistory() {
