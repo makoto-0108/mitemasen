@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>みてません。</title>
   <style>
     body {
@@ -17,6 +17,8 @@
       border-radius: 1em;
       padding: 2em;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 480px;
+      margin: 0 auto;
     }
     .header-png {
       width: 100%;
@@ -26,14 +28,21 @@
       margin: 0 auto 1em;
       border-radius: 1em;
     }
-    @media (min-width: 768px) {
-      .header-png {
-        max-width: 200px;
-      }
+    .slogan {
+      font-size: 1.2em;
+      color: #4a5a2a;
+      margin-top: -1em;
+      margin-bottom: 1.5em;
+      font-style: italic;
+      font-weight: 600;
     }
-    h1 {
-      font-size: 1.8em;
-      margin-bottom: 0.5em;
+    .cat-image {
+      width: 150px;
+      max-width: 80%;
+      height: auto;
+      margin: 1em auto;
+      display: block;
+      transition: transform 0.3s ease;
     }
     .points {
       font-size: 1.5em;
@@ -57,6 +66,7 @@
     .message {
       margin-top: 1em;
       font-size: 1.2em;
+      min-height: 2em;
     }
     table {
       margin-top: 2em;
@@ -81,7 +91,8 @@
 <body>
   <div class="container">
     <img src="header.png" alt="みてませんヘッダー画像" class="header-png" />
-    <h1>『みてません。』</h1>
+    <h2 class="slogan">夜ふかしスマホにさようなら。</h2>
+    <img id="catImage" src="cat_normal.png" alt="黒猫ちゃん" class="cat-image" />
     <div class="points">ねむポ：<span id="points">0</span>pt</div>
     <button class="good" onclick="reportNoLook()">🙈 見てない！</button>
     <button class="bad" onclick="reportLooked()">📱 見ちゃった…</button>
@@ -100,11 +111,26 @@
   <script>
     const pointEl = document.getElementById("points");
     const messageEl = document.getElementById("message");
+    const catImage = document.getElementById("catImage");
     const historyTable = document.getElementById("historyTable").querySelector("tbody");
 
+    const CAT_NORMAL = "cat_normal.png";
+    const CAT_CROWN = "cat_crown.png";
+
     const today = new Date().toLocaleDateString("ja-JP");
-    const praises = ["えらいにゃ！🐾", "今日もがんばったね！😺", "よく寝れたかにゃ？💤", "スマホ見なかったの、天才じゃん！✨"];
-    const comforts = ["また明日があるにゃ。🐈", "つい見ちゃう日もあるさ〜", "がんばりすぎないでね💤", "ねむポは逃げないよ…！"];
+    const praises = [
+      "えらいにゃ！🐾", 
+      "今日もがんばったね！😺", 
+      "よく寝れたかにゃ？💤", 
+      "スマホ見なかったの、天才じゃん！✨",
+      "王冠ゲットに近づいてるにゃ〜👑"
+    ];
+    const comforts = [
+      "また明日があるにゃ。🐈", 
+      "つい見ちゃう日もあるさ〜", 
+      "がんばりすぎないでね💤", 
+      "ねむポは逃げないよ…！"
+    ];
 
     function getPoints() {
       return parseInt(localStorage.getItem("points") || "0");
@@ -113,6 +139,13 @@
     function setPoints(val) {
       localStorage.setItem("points", val);
       pointEl.textContent = val;
+
+      if (val >= 7) {
+        catImage.src = CAT_CROWN;
+        messageEl.textContent = "王冠ゲット！えらすぎるにゃ〜👑";
+      } else {
+        catImage.src = CAT_NORMAL;
+      }
     }
 
     function getHistory() {
@@ -140,9 +173,15 @@
         return;
       }
       const current = getPoints();
-      setPoints(current + 1);
+      const newPoints = current + 1;
+      setPoints(newPoints);
       setReported("🙈 +1pt");
-      messageEl.textContent = praises[Math.floor(Math.random() * praises.length)];
+
+      if (newPoints >= 7) {
+        messageEl.textContent = "王冠ゲット！えらすぎるにゃ〜👑";
+      } else {
+        messageEl.textContent = praises[Math.floor(Math.random() * praises.length)];
+      }
     }
 
     function reportLooked() {
