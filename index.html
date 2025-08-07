@@ -5,24 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>みてません。</title>
 
+  <!-- フォント -->
   <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap" rel="stylesheet">
 
   <style>
     body {
       font-family: 'Kosugi Maru', sans-serif;
-       background-color: #000000; /* 真っ黒 */
-  color: #ffffff;            /* 文字は白に */
+      background-color: #000;   /* 黒背景 */
+      color: #fff;              /* 白文字 */
       text-align: center;
       padding: 2em;
     }
 
     .container {
-      background-color: #ffffffcc;
+      background-color: #ffffffcc; /* 白 + 透過感 */
+      color: #000;
       border-radius: 1em;
       padding: 2em;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       max-width: 480px;
       margin: 0 auto;
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
     }
 
     .header-png {
@@ -37,7 +39,6 @@
     .slogan {
       font-size: 1.2em;
       color: #4a5a2a;
-      margin-top: 0;
       margin-bottom: 1.5em;
       font-style: italic;
       font-weight: 600;
@@ -46,7 +47,6 @@
 
     .cat-image {
       width: 150px;
-      max-width: 80%;
       height: auto;
       margin: 1em auto;
       display: block;
@@ -98,6 +98,7 @@
       margin-right: auto;
       border-collapse: collapse;
       background: #fff;
+      color: #000;
       border-radius: 0.5em;
       overflow: hidden;
     }
@@ -250,7 +251,7 @@
       luckyEl.textContent = "🔮 今日のひとこと運勢： " + msg;
     }
 
-    // 初期化
+    // 初期化処理
     setPoints(getPoints());
     renderHistory();
     showLuckyMessage();
