@@ -114,6 +114,73 @@
   </style>
 </head>
 <body>
+    <!-- ↓ このコードを <body> の中の一番最初に入れてください！ -->
+
+<div id="intro" class="intro">
+  <h2>「みてません。」とは？</h2>
+  <p>
+    夜遅くスマホを見すぎてしまうあなたへ。<br>
+    このアプリは「スマホを見ない時間」をポイント（ねむポ）で楽しく記録し、早寝をサポートします。<br>
+    「見てない」ボタンを押して、ねむポをためていきましょう！
+  </p>
+  <button id="closeIntro">閉じる</button>
+</div>
+
+<style>
+  .intro {
+    background-color: #222;
+    color: #eee;
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 480px;
+    margin: 1em auto;
+    font-family: 'Kosugi Maru', sans-serif;
+    position: relative;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    text-align: left;
+  }
+
+  .intro h2 {
+    font-size: 1.4em;
+    margin-top: 0;
+    color: #f0c040;
+  }
+
+  .intro p {
+    font-size: 1em;
+    line-height: 1.5;
+  }
+
+  #closeIntro {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    color: #f0c040;
+    border: 1px solid #f0c040;
+    border-radius: 6px;
+    padding: 4px 8px;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const intro = document.getElementById('intro');
+    const closeBtn = document.getElementById('closeIntro');
+    const hasSeen = localStorage.getItem('hasSeenIntro');
+
+    if (hasSeen) {
+      intro.style.display = 'none';
+    }
+
+    closeBtn.addEventListener('click', () => {
+      intro.style.display = 'none';
+      localStorage.setItem('hasSeenIntro', 'true');
+    });
+  });
+</script>
+
   <div class="container">
     <img src="header.png" alt="みてませんヘッダー画像" class="header-png" />
     <h2 class="slogan">夜ふかしスマホにさようなら。</h2>
